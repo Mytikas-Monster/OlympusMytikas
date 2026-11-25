@@ -1,32 +1,165 @@
-Olympus Mytikas — 1.1.2
+Olympus Mytikas 1.1.4 for WoW Forever 1.60.1
 
-1.1.2 — fixes for WoW Forever
-The shared window shows your installed version and a selectable Member Home address alongside the KoS toggle.
-Forever map pins use the correct map coordinates. Recruit keeps saved profiles, fits its ads in the chat limit, and checks for your own message in each channel.
-The debt Ledger follows the current bounty on each target. Deleting or resetting targets removes their Ledger rows. Starting a new bounty on a settled target replaces its previous Ledger row.
-Guildmates can sync large boards and offscreen targets. The monthly prize rolls over in UTC and saved payouts survive a board reset.
+The guild logo now appears in the AddOns list. After installing the update, fully exit and restart WoW to load the new icon. A /reload is insufficient.
 
-Also included from the 1g update
+Open INSTRUCTIONS.txt in the OlympusMytikas folder for the Recruit and Kill on Sight commands. The guide also covers MineWatch for players who install it separately. CHANGELOG.txt includes the history of both original addons. This release keeps the gameplay and shared window from 1.1.2.
 
-1.1.0 — major update: live 1g bounties
-Live bounties: right-click, /kos bounty, /kos fund or Fund puts up 1g at once; requester owes until GM/Valar runs /kos paidup <name>. /kos owed, Ledger and Officers show it.
-Every bounty shows the killer's level and the layer he was on (layer S, layer P) on the board row, detail panel, Announce and /kos where. Read from LayerSwap and visible creatures, never guessed.
-70/30 stays: bank keeps 30%, hunter's 70% joins the month's one prize pool, top hunter wins, a person pays, /kos boardpaid records it. Addon never moves gold.
+## 1. OlympusRecruit (standalone)
 
-1.1.1 — small follow-up
-New Ledger tab: who owes what, plus cleared debts with date and who cleared them.
-Fixes in this build: no mouse-wheel scrolling (use Prev/Next), board and Ledger rows stay still during sync, old 3g rows cannot reset 1g, plain words: bank keeps, prize paid out, prize pool, refunded.
-Layers show only on NEW kills and retire after one hour; unknown stays unknown, your own layer is read only at a real death. Announce reads latest level/layer first.
-Swap to layer opens a plain RP whisper to the victim who set the bounty; press Enter. Hidden LayerSwap notes still let hosts auto-invite.
-Only the guild master or Valar can delete; deletes stay final on old and new clients. Re-add by hand (/kos add).
-Kill/death notices no longer spam chat - /kos chat replays them, /kos chat clear wipes them.
-The window has a KoS ON/OFF button; /kos off|on does the same. Off stops notices, sync, badges and pins.
-All Olympus-family local chat is hidden to cut spam; /mytikas hidden replays it. Replies to commands you type still show.
-First-run notice covers all of the above in 7 steps.
-1.1.1 added the quiet version check; /om version checks or toggles it.
+### Early builds — the recruitment addon
+- Created a guild recruitment addon that posts `<Olympus Mytikas>` ads to **/1 General** and **/2 Trade**.
+- Added a random ad picker, a custom ad editor (`/om add`, `/om del`) and a saved ad list.
+- Added an in-game window and a minimap button.
+- Settings were made **per character** through `EnsureDB()` and `OlympusRecruitDB.chars["<realm>-<name>"]`.
+- Added the two key bindings whose literal names had to survive every later merge:
+  - `Post a recruitment ad`
+  - `Open the Olympus Recruit window`
 
-Still true: no auto-post, no addon invites, no SetRaidTarget / Skull button / RAID_WARNING chat.
-Install: use only OlympusMytikas; keep old folders as backup. Built from Recruit 1.6.5 + KoS 1.5.4.
+### v1.4.0 — posting simplified, note-writing removed
+- Reduced posting to **exactly two literal sends**, one to channel 1 and one to channel 2, in a single pass with nothing between them.
+- Removed all channel machinery: no detection, joining, leaving, slot reshuffle or `/om channels|fix|layout|probe|autofix`.
+- Removed **auto-post** completely. This client blocks protected actions from timers; a post only works from a real click or key press.
+- Added echo checking: the client echoes our own posts back, so the addon can say when 0 or 1 of the two echoes came back.
+- Added an `ADDON_ACTION_BLOCKED` handler that distinguishes “that is the Interface action failed line” (ours) from other addons’ failures.
+- Removed the guild-note date feature entirely: no `SetNote`, no `GetGuildRosterInfo`, no date queue and no `/om note|apply|notetest|notecheck|dates|notetype|rows`. Note writes only land from a hardware event on this client, so automatic dates were never reliable.
+
+### v1.5.x — window and controls settle
+- Exact per-version notes were not retained. By this point the standalone window was the 480x480 panel with the title, subtitle, status line, one static `/1 General + /2 Trade` line, ad display, pager, Post buttons, ad input box and the “no auto-post” warning.
+- The minimap button could be toggled with `/om minimap` and its angle saved.
+- Art rules settled: power-of-two 32-bit uncompressed TGA, extensionless paths, one flat texture per window via `SetAllPoints` and **no `SetTexCoord`** (nine-sliced art tore on this client).
+
+### v1.6.0 — right-click “Invite to <guild>” line
+- Confirmed that Forever 1.60.1 forbids addon guild invites. `C_GuildInfo.Invite`, secure buttons, macro text and even addon-filled chat text all produce “Interface action failed because of an addon”.
+- Removed every invite call. Instead, the addon adds a menu line through Blizzard’s own `Menu.ModifyMenu("MENU_UNIT_" .. which, fn)`.
+- Hooks `PLAYER`, `PARTY`, `RAID_PLAYER`, `RAID`, `FRIEND`, `CHAT_ROSTER`, `COMMUNITIES_WOW_MEMBER` and `RECENT_ALLY`.
+- Deliberately does **not** hook `MENU_UNIT_GUILD` or `MENU_UNIT_COMMUNITIES_GUILD_MEMBER`; those contain the game’s protected officer actions.
+- The line opens a copy box containing `/ginvite First Surname`, already highlighted. The player copies it, presses Enter to open the game’s chat box empty, pastes and presses the final Enter — the hardware key press is what the client accepts.
+- No line is shown for self, offline players, Battle.net accounts, non-player units, disconnected players or secret contexts; gamepad input style is skipped.
+- Names are always `First Surname`, never `Name-Realm`, because this server rejects the `Name-Realm` form.
+- Added `/om invite <name>` and `/om why` diagnostics.
+
+### v1.6.5 — final standalone version before the merge
+- Removed the 15 guild-war ads.
+- This is the Recruit version folded into OlympusMytikas 1.0.0.
+
+---
+
+## 2. KillOnSight (standalone)
+
+### Early builds — the kill board
+- Created a guild kill-list addon: when an enemy player kills a guild member, that enemy goes on a shared board.
+- Established the central rule: **no deposit, no bounty**. A name on the board is only a target; the addon never moves gold. A person deposits at the guild bank and a person pays the hunter. The addon only verifies bank-balance changes.
+- Death capture avoids `COMBAT_LOG_EVENT_UNFILTERED` (forbidden on Forever). It uses `PLAYER_DEAD`, `C_DeathRecap` retries and a 2-second `WatchDeath()` ticker, deduplicated by `guid@stamp`.
+- Added chat notices, a window built from the game’s own portrait-frame chrome, a minimap button, guild addon-message sync and a digest so late joiners catch up.
+- Introduced the 70/30 money model: the bank keeps 30%; the hunter’s 70% becomes the monthly prize pool rather than a per-kill hand-out.
+
+### v1.2 — death feed
+- Added a per-scope death history and `D` rows shared with the guild; capped at 100 deaths, newest first.
+- Added `/kos kills`, `/kos kills mine`, `/kos deaths` and `/kos killed`.
+- Added the feed UI: Mine/All toggle, pager, five clickable rows with killer class colour, victim, age and bounty state.
+- Clicking a killer in the feed selects him, re-adds him if the board forgot him, reopens a settled bounty for a fresh deposit and points at Fund.
+- `/kos reset` wipes the board but keeps the death history.
+- A `D` row is history only: it never resurrects an entry another member deliberately deleted.
+
+### v1.3.0 — pending bounty jobs
+- Right-clicking a killer in either list, or `/kos bounty <name>`, creates an instant **pending bounty job**. Left-click still only selects.
+- The job flag lives on the board entry and travels on wire field 23, so it survives `/reload` and reaches every guildmate.
+- State becomes `pending` until the bank’s own balance rises by the funded amount; only then does the bounty go live.
+- The window subtitle counts pending jobs, rows say “pending job”, and the feed hint teaches the right-click.
+- Fixed a real-client bug: both name-row buttons now call `RegisterForClicks("LeftButtonUp", "RightButtonUp")`; previously right-clicks were never delivered.
+
+### v1.4.4 — map pins and last-known locations
+- Bundled LibStub, CallbackHandler and Olympus’s HereBeDragons map libraries.
+- Added addon-only world-map and minimap pins for the stored last-known location. Exact sightings are gold; “nearby” sightings are rust and say so in the tooltip.
+- Spot capture only comes from visible units (`target`, `mouseover`, `nameplate1..40`). It uses `C_Map` first, then HereBeDragons’ world-to-zone fallback. Raw `UnitPosition`/`GetMapPosFromWorldPos` conversions are never used.
+- Wire fields 24–28 carry map, x/y in tenths of a percent, time and kind. Newer exact sightings replace older nearby ones.
+- Added `/kos pins` diagnostics and a clear statement that these are per-client addon pins, not shared world markers.
+
+### v1.4.5 — pins expire
+- `PIN_TTL = 1800`: pins disappear 30 minutes after the last sighting so they do not clog guildmates’ maps.
+- The board row, stored spot and `/kos where` keep the location forever.
+- A later sighting restarts the 30-minute timer.
+
+### v1.4.6 — flat 3g and the read-first notice
+- Replaced kill-count escalation with a flat **3g** ask; the old `KILL_BONUS` remains only in the one-time migration.
+- Added the mandatory first-run rules modal. It uses `UICheckButtonTemplate`, disables Continue until acknowledgement, hides the close button, removes itself from `UISpecialFrames` and cannot be dismissed with Escape before it is read.
+- Acknowledgement is saved account-wide in `KillOnSightDB.welcomeAck`.
+- `/kos notice` (alias `/kos welcome`) replays it as a preview without changing the acknowledgement.
+- The warning wording must read exactly `READING THIS FIRST`. `/kos help` stays a plain command list; the rules are not moved into help.
+
+### v1.4.7 — monthly Hunter Board tab
+- Added a second real UI tab, **Hunter Board**, beside Board.
+- Panel shows RANK / HUNTER / KILLS / BOUNTY CREDIT, ten rows, top hunter, last month and a Sync button.
+- Final money model: 3g splits 70/30. The bank keeps 90s; the hunter’s 2g10s joins one monthly prize pool. The hunter with the most completed funded bounties wins the whole pool. A human pays it; the addon never does.
+- Credit comes from `ClaimKill` — a local `PARTY_KILL` of a funded target — not from `RecordDeath`. One credit per hunter, target and UTC month.
+- Gate: only live, fully funded, unsettled bounties count, and the hunter cannot be the funder.
+- Tie-break: most unique victims, then earliest to reach that score, then name.
+- Added `B~C~...` and `B~P~...` sync rows with deduplication, month rollover, archived winners (max 12) and `/kos boardpaid`.
+- `/kos owed` and `/kos officers` list only the monthly pool and refunds.
+- Helpers were moved onto `Board`, `MapLib` and `ns` to stay under Lua 5.1’s 200-local main-chunk limit.
+
+### v1.4.8 — shared death location
+- `D` rows now carry the death’s own point in wire fields 8–12.
+- Fixed a sync bug where an incoming `E` row stored its spot but did not mark the map pins dirty; other guild members saw no pin until a reload or another board edit.
+- `/kos kills` appends the shared location; death-feed rows show it in a hover tooltip.
+- Clicking a shared death restores both the board spot and the pin without inventing a point.
+- Old seven-field death rows still parse; malformed or zero points are dropped.
+
+### v1.5.4 — final standalone version before the merge
+- Fixed the `Valar` rank spelling. The old `Lalar` spelling had locked the officer rank out of its own board controls.
+- This is the KoS version folded into OlympusMytikas 1.0.0.
+
+---
+
+## 3. OlympusMytikas 1.0.0 — the merged addon
+
+### Creation of the one installable addon
+- Combined OlympusRecruit 1.6.5 and KillOnSight 1.5.4 into one folder and one `.toc`.
+- One 560x850 window with two real tabs — Recruit and Kill on Sight — over one 540x760 content area.
+- Shared Forever chrome: `PortraitFrameTemplate`, `Professions-QualityWindow-Background`, `heavybronze-frame-background` insets and `UIPanelButtonTemplate` buttons. Each embedded panel’s own chrome is hidden.
+- One minimap button, `OlympusMytikasMinimap`: left click opens the last-used tab, right click posts one random ad to /1 and /2, drag moves it anywhere in or around the minimap.
+- Both `/om minimap` and `/kos minimap` drive that one button; the two original buttons are never built and old ones are hidden.
+- All `/om` and `/kos` commands, saved variables and guild sync formats were preserved.
+- Load order: Bootstrap, LibStub, CallbackHandler, HereBeDragons, HereBeDragons-Pins, OlympusMytikas shell, Recruit, KillOnSight.
+- Root `Bindings.xml` ships and is auto-loaded by the client; it is deliberately not listed in the `.toc`. The literal binding names are unchanged, only the display category became Olympus Mytikas.
+
+### Art
+- Added the Olympus white-mountain mark: `Media\olympus-logo.tga` for the window portrait and `Media\minimap.tga` for the button, generated from the same normalized shape.
+- 32-bit uncompressed TGA, power-of-two, extensionless paths, one flat texture per window and no `SetTexCoord`.
+- Recruit’s old custom art was dropped; both tabs use the kill board’s frame and bronze insets.
+
+### Post-merge fixes on 21 November
+- Restored the missing root `Bindings.xml`, bringing back both key bindings.
+- Changed minimap dragging from a fixed ring to a full circle with a saved radius: `minimapRadius` is stored alongside `minimapAngle`, clamped 0–120, and the drag code uses `atan2` plus the cursor-to-centre distance.
+- Made the button visible to OneForAll 6.2.12 by keeping it a direct child of `Minimap`, 32x32, with a plain global name. `EnsureMapButton()` stops re-anchoring it once OneForAll reparents it into its bar.
+- Fixed text overlap across the whole UI:
+  - Welcome window grew to 740 tall; warning font 20, height 76, centred, moved down; rules start lower with a blank line between every numbered rule.
+  - Board and death-feed row height reduced to 18.
+  - Last-known-location, pager and death-feed hint each got their own measured strip and separator.
+  - Detail text now word-wraps with a line cap so a long location cannot spill into the ledger.
+- `/kos notice` can replay the read-first page for people who already acknowledged it.
+
+### Badge and warning work — final state
+- Audited the automatic nameplate icon: it does **not** scan names. It walks `nameplate1..40`, reads each unit’s GUID and matches the board by GUID. It is per-client, so every addon user runs the same check.
+- Kept Blizzard’s own `UI-RaidTargetingIcon_8` texture at CENTER, 0, 30, with no `KoS` label. Map pins still use `Media\bounty`; the two are separate.
+- Confirmed from the installed client that Forever blocks automatic `SetRaidTarget`; RXPGuides and Zygor both avoid it.
+- Built a secure `/tm !8` Skull button, then removed all of it when the user said: “no i dont want a skull button i want the addon to do it”.
+- Delivered the automatic alternative:
+  - `DEFAULTS.warnNearby = true`
+  - `ns.WARN_COOLDOWN = 30`
+  - `ns.warned` and `ns.BountyWarning(e)`
+  - `RaidNotice_AddMessage(RaidWarningFrame, "BOUNTY IN RANGE: <name> (<money>)", color)`
+  - `PlaySoundFile("Sound\\Interface\\RaidWarning.ogg")`
+  - `UIErrorsFrame`, then plain `Say`, as fallbacks
+  - `/kos warn` toggles it; `/kos badge` reports it
+- The banner is local to the hunter. It is **not** a `RAID_WARNING` chat send, needs no leader or assist, and needs no hardware click. It fires when a funded, unsettled bounty’s nameplate appears; repeats after 30 seconds while they remain visible; and resets when they leave and re-enter range.
+- No `SecureActionButtonTemplate`, `/tm !8`, `/kos skull`, `ns.UpdateSkullButton` or `PLAYER_REGEN_ENABLED` handler remains.
+
+### Distribution and verification notes
+- The merged addon installs in one OlympusMytikas folder.
+- At the 1.0.0 merge the checks were: syntax OK on all three installed Lua files, 267 Recruit checks, 724 KoS checks and 78 merged-addon checks with 0 failures. The first zip was `OlympusMytikas-1.0.0.zip`, 19 files, 283,355 bytes.
+
+---
 
 Olympus Mytikas 1.0.3 for WoW Forever 1.60.1
 
@@ -53,20 +186,42 @@ Testing, packaging and publishing
 
 1.0.1 - Show installed version and a selectable Member Home URL in the shared window.
 
-Olympus Mytikas 1.0.0 - the two addons are now one
+## 4. OlympusMytikas 1.1.x — public updates
 
-Install one folder. Inside it: OlympusRecruit 1.6.5 + KillOnSight 1.5.4 in one shell window with two tabs, one minimap button, their bundled map libraries and the Olympus art.
+### 1.1.0 — live 1g bounties
+- Live bounties: right-click a name in either list, `/kos bounty <name>`, `/kos fund <name>` or the window's Fund button all open a 1g bounty at once. No bank visit, no deposit gate and no pending job.
+- The requester owes the 1g until a GM or Valar runs `/kos paidup <name>`. `/kos owed`, the Ledger tab and the Officers button show who owes what.
+- Bounties show the killer's level and layer on the board row, detail panel, Announce and `/kos where`. Read from LayerSwap and visible creatures, never guessed.
+- 70/30 stays: the bank keeps 30%, the hunter's 70% joins that month's single prize pool, the top hunter wins, a person pays by hand and `/kos boardpaid` records it. The addon never moves gold.
+- One-time migration moves old 3g asks to 1g and drops stale job flags without disturbing settled rows.
 
-WHAT'S IN THIS ONE ADDON
-- Files: OlympusMytikas.toc + OlympusMytikas.lua (the shared window, tabs and minimap button), OlympusRecruit.lua, KillOnSight.lua, Bootstrap.lua, libs\ (LibStub, CallbackHandler, HereBeDragons + pins), Media\ (portrait, minimap, panel, glow, bounty, emblem), CHANGELOG.txt.
-- Recruit tab: /om posts one random ad to /1 General and /2 Trade in one pass, 61 ads, custom ads (/om add, /om del), and the right-click "Invite to <guild>" line. Forever forbids addon invites, so it copies /ginvite First Surname for you to paste and press yourself. No auto-post.
-- Kill on Sight tab: shared kill board, death feed with last-known locations, 30-minute map pins, pending bounty jobs, flat 3g bounties verified against the guild bank, 70/30 split, monthly Hunter Board with one pooled prize, first-run rules notice, audit log, Valar/GM-only remove and settle.
-- Shared skin: one window on Forever's own chrome, titled Olympus Mytikas, with the white-mountain-on-navy portrait and matching minimap button (left opens the last tab, right posts an ad, drag saves the angle). KoS keeps its Board / Hunter Board sub-tabs; all /om and /kos commands still work.
+### 1.1.1 — small follow-up (all later fixes)
+- New Ledger tab: WHO / GOLD / FOR / WHEN / STATUS, 14 rows, footer totals, Prev/Next. It lists outstanding debts and settled history; cleared rows keep the date and officer.
+- Fixes in this build: no mouse-wheel scrolling (use Prev/Next), rows stay still during sync, an old 3g copy cannot reset 1g, and the wording is plain: bank keeps, prize paid out, prize pool, refunded.
+- Board rows sort by the real last kill time and new kills appear at the top. A late old-client sync keeps its own time instead of jumping to the top.
+- Level and layer: a layer is shown only for NEW kills and retires after one hour; old or expired kills and unknown values stay unknown. The Announce button fills the latest level/layer first, including a level held only by the shared death row.
+- Swap to layer opens a plain RP whisper to the victim who set the bounty, asking for an invite; hidden LayerSwap notes ride along and are refreshed when the player presses Enter. No secure button or technical tag.
+- Only the guild master or Valar can delete; deletes stay final on every client. The delete is stamped above anything an older client can send, and a genuine re-add by hand (`/kos add`) is the only way back. No personal master switch exists.
+- The `Mark paid` button explains itself on hover: use it only after the requester handed the 1g to the bank; it clears their Ledger debt and GM or Valar only.
+- Kill/death notices no longer spam chat. They go to a buffer; `/kos chat` replays it and `/kos chat clear` wipes it. Command replies still print normally.
+- The window has a KoS ON/OFF button (account-wide). `/kos off|on` also stops notices, sync, badges and pins while Recruit keeps working.
+- Olympus-family local chat lines are held, not printed; `/mytikas hidden` replays them. Command replies are never filtered.
+- The first-run notice is seven numbered steps covering levels/layers, 1g bounties, debts, kills, the prize, refunds and final deletes. `/kos notice` previews it without changing the acknowledgement.
+- 1.1.1 added the quiet version check; `/om version` checks or toggles it. Your own build is printed in held local chat after login, and an updated guildmate's newer build is reported once.
 
-NEW IN THE MERGE
-- The Recruit tab's old custom art is gone; both tabs use the kill board's frame and bronze insets.
-- Latest upstream fixes are in: Recruit 1.6.5 dropped the 15 guild-war ads; KoS 1.5.4 fixed the "Valar" rank spelling that locked the rank out of its own board.
+### 1.1.2 — fixes for WoW Forever
+The shared window shows your installed version and a selectable Member Home address alongside the KoS toggle.
+Forever map pins use the correct map coordinates. Recruit keeps saved profiles, fits its ads in the chat limit, and checks for your own message in each channel.
+The debt Ledger follows the current bounty on each target. Deleting or resetting targets removes their Ledger rows. Starting a new bounty on a settled target replaces its previous Ledger row.
+Guildmates can sync large boards and offscreen targets. The monthly prize rolls over in UTC and saved payouts survive a board reset.
 
-STILL TRUE
-Gold never moves by addon: a person deposits at the bank and pays the hunter. A name on the board is not a bounty until the bank balance proves it.
-Delete the old OlympusRecruit and KillOnSight folders after installing. The source addons are left untouched for reference.
+## Hard rules carried to the end
+
+- Forever 1.60.1 forbids addon guild invites: no `C_GuildInfo.Invite` or `GuildInvite`; the menu line only copies `/ginvite First Surname`.
+- Recruit posts exactly two literal `SendChatMessage(..., "CHANNEL", nil, 1/2)` sends in one pass, only from a click or key press. No channel machinery, no auto-post, no guild-note dates.
+- KoS never uses `COMBAT_LOG_EVENT_UNFILTERED`; deaths come from `PLAYER_DEAD` plus `C_DeathRecap`.
+- The addon never moves gold. Humans deposit and pay; officers record payment with /kos paidup.
+- Rank spelling is `Valar`, never `Lalar`.
+- No `SetTexCoord`; one flat texture per window.
+- No real raid marker from addon code or timers: no `SetRaidTarget`, no secure Skull button, no `SendChatMessage(..., "RAID_WARNING")`.
+- The automatic nameplate icon and the local warning banner are per-client aids, not shared raid markers.

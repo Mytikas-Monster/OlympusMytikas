@@ -221,7 +221,7 @@ local function MyVersion()
 	if (type(v) ~= "string" or v == "") and type(GetAddOnMetadata) == "function" then
 		v = GetAddOnMetadata(ADDON, "Version")
 	end
-	if type(v) ~= "string" or v == "" then v = "1.1.2" end
+	if type(v) ~= "string" or v == "" then v = "1.1.4" end
 	return v
 end
 

@@ -1,0 +1,285 @@
+===============================================================================
+WOW FOREVER - INSTRUCTIONS FOR OUR ADDONS
+===============================================================================
+
+Install the OlympusMytikas folder in _forever_/Interface/AddOns. Keep your
+WTF folder to preserve saved settings. The merged addon replaces the old
+OlympusRecruit and KillOnSight folders. Part 2 covers the separate MineWatch
+addon for players who also have it installed.
+
+===============================================================================
+PART 1 - OLYMPUS MYTIKAS (version 1.1.4)
+===============================================================================
+
+-------------------------------------------------------------------------------
+1. OPENING THE WINDOW
+-------------------------------------------------------------------------------
+
+- Type /mytikas (or /omg), or left-click the OlympusMytikas minimap button.
+- The window shows your installed version and a selectable Member Home
+  address. Use the Recruit and Kill on Sight tabs to switch tools.
+- Minimap button: left click = window, right click = post one random ad,
+  drag = move it anywhere in or around the minimap.
+- /om minimap hides or shows the button.
+- The addon has its own logo in the WoW AddOns list. A full restart is needed
+  before a new texture shows up.
+
+-------------------------------------------------------------------------------
+2. RECRUIT
+-------------------------------------------------------------------------------
+
+Post an ad:
+- /om with no argument posts ONE random ad to /1 General and /2 Trade.
+- In the Recruit tab: choose an ad with < / >, then click "Post this ad" or
+  "Post a random ad".
+- /om pick <number> selects an ad from the keyboard.
+- Add ads in the ad box with "Add ad"; remove the selected one with "Del".
+- There is NO auto-post. Forever only accepts a chat send from a real click or
+  key press, so every post must be something you actually press.
+
+Guild invite line:
+- Right-click a player and use "Invite to <guild>". Forever forbids addons from
+  sending guild invites. The addon opens a box with /ginvite First Surname
+  already selected. Copy it, close the box, paste into chat and press Enter
+  yourself. Names are "First Surname", not "Name-Realm".
+- /om invite <name> opens the same box from the keyboard.
+
+Key bindings (Key Bindings > Olympus Mytikas):
+- "Post a recruitment ad"
+- "Open the Olympus Recruit window"
+
+Other useful commands:
+- /om help  - list Recruit commands.
+- /om why   - show menu-hook and blocked-action status.
+- /om version - show the build; /om version off|on toggles newer-version notices.
+- /mytikas hidden (or /mytikas chat) - replay the last 50 hidden Olympus-family
+  chat lines. Replies to commands you type are never hidden.
+
+-------------------------------------------------------------------------------
+3. KILL ON SIGHT - THE BOARD
+-------------------------------------------------------------------------------
+
+- /kos opens the board.
+- Right-click a name in the board or death feed to start a bounty, or use
+  /kos bounty <name> / /kos fund <name>, or click the Fund button.
+- A bounty is LIVE at once and is a flat 1 gold. No bank visit, no deposit
+  check, no pending state.
+- The requester owes that 1g until a guild master or Valar clears it. The
+  addon never moves gold. A person pays at the guild bank; the addon records.
+
+Tabs in the KoS window:
+- Board       - the enemy list and the death feed.
+- Hunter Board - this month's top hunter by completed funded bounties.
+- Ledger      - WHO / GOLD / FOR / WHEN / STATUS, with Prev/Next paging.
+
+The board has no mouse-wheel scrolling. Use Prev/Next. Rows stay still during
+guild sync; a genuinely new kill moves to the top, newest first.
+
+-------------------------------------------------------------------------------
+4. MONEY AND DEBTS
+-------------------------------------------------------------------------------
+
+- 70/30: the guild bank keeps 30%; the hunter's 70% joins ONE prize pool for
+  the month. The hunter with the most completed bounties wins the pool.
+  A person pays the winner by hand; /kos boardpaid records that hand-over.
+- /kos owed shows who owes what. The Officers button posts the same owed line
+  into chat for the bank officers.
+- GM or Valar: /kos paidup <name> clears a requester's debt. The "Mark paid"
+  button does the same and has a hover explanation. Use it only after the 1g
+  has actually reached the guild bank.
+- /kos paid explains the prize pool.
+- The addon reads balances for /kos status and /kos bank, but does not check a
+  deposit before starting a bounty and never moves gold.
+
+-------------------------------------------------------------------------------
+5. KILLS, LEVEL AND LAYER
+-------------------------------------------------------------------------------
+
+- /kos kills (or /kos kills mine) shows recorded deaths.
+- Bounties show the killer's level and layer when readable: board row, detail
+  panel, death-feed tooltip, Announce and /kos where. Level comes from visible
+  units, tooltips, the roster or Olympus evidence; layer comes from LayerSwap.
+  Unreadable values stay blank - never guessed.
+- A layer only starts on a NEW kill and lasts one hour. Old kills do not start
+  with a layer. After an hour it retires on every client.
+- Your own layer is used only at the moment you actually die, because the
+  killer was on your layer then. Later sightings do not borrow it.
+- /kos where [name] prints the last known location and the level/layer reads.
+  Map pins last 30 minutes after the last sighting; the board keeps the spot.
+- /kos swap [name] (or the "swap to layer" button) opens a chat box with a
+  plain whisper to the victim who set the bounty, asking for a layer invite.
+  Press Enter to send it. Hidden LayerSwap notes let a host auto-invite.
+  Old or expired kills refuse.
+
+-------------------------------------------------------------------------------
+6. CHAT, WARNINGS AND MAP
+-------------------------------------------------------------------------------
+
+- Kill/death notices are NOT printed in normal chat. /kos chat replays them;
+  /kos chat clear wipes the buffer. Command replies still print normally.
+- A local "BOUNTY IN RANGE" warning and a nameplate icon appear per client for
+  live funded bounties you can see. The addon does not set Blizzard's real
+  raid skull and does not send RAID_WARNING chat.
+- /kos badge (or /kos marks) explains which visible nameplates get a badge.
+- /kos pins reports the map-pin state.
+- Prefix-matched automatic Olympus-family local lines are hidden to reduce
+  spam. Use /mytikas hidden to see them.
+
+-------------------------------------------------------------------------------
+7. TURNING KoS OFF
+-------------------------------------------------------------------------------
+
+- The KoS ON/OFF button in the Olympus Mytikas window toggles the kill board.
+  Off hides the KoS tab and stops notices, sync, badges and map pins.
+  Recruit keeps working. The setting is saved account-wide.
+- /kos off and /kos on do the same from the keyboard.
+- Run with /kos off when you only want recruiting.
+
+-------------------------------------------------------------------------------
+8. DELETES AND SYNC
+-------------------------------------------------------------------------------
+
+- Only the guild master or Valar can delete an entry. A plain member cannot
+  delete even with a force flag, and a forged delete from a member is ignored.
+- A manager's delete is final on old and new clients. To bring a name back,
+  add it again by hand with /kos add or right-click and start a new bounty.
+- There is no "master mode" and no /kos master command.
+- Guild sync keeps board rows still while you read them, and brings new kills
+  in at the top.
+
+-------------------------------------------------------------------------------
+9. QUICK COMMAND LIST - OLYMPUS MYTIKAS
+-------------------------------------------------------------------------------
+
+  /mytikas              open the shared window
+  /om                   post one random ad to /1 and /2
+  /om pick <n>          select ad number n
+  /om invite <name>     open the /ginvite copy box
+  /om version           show build / toggle newer-version notices
+  /mytikas hidden       replay hidden Olympus-family chat lines
+  /kos                  open the Kill on Sight board
+  /kos bounty <name>    start a live 1g bounty
+  /kos fund <name>      same as bounty
+  /kos owed             list who owes gold
+  /kos officers         post the owed line to chat
+  /kos paidup <name>    GM/Valar only: clear a requester's debt
+  /kos boardpaid        record the monthly prize hand-over
+  /kos chat             replay held kill/death notices
+  /kos chat clear       clear that buffer
+  /kos kills            show recorded deaths
+  /kos where [name]     show last location, level and layer
+  /kos swap <name>      whisper the victim to ask for a layer invite
+  /kos announce         announce the selected killer to guild chat
+  /kos badge            explain visible nameplate badges
+  /kos pins             show map-pin state
+  /kos notice           replay the first-run rules notice
+  /kos on | /kos off    turn the Kill on Sight half on or off
+  /kos help             full in-game command list
+
+-------------------------------------------------------------------------------
+10. FIRST TIME
+-------------------------------------------------------------------------------
+
+The first time Kill on Sight loads, a rules window opens. Tick "I have read
+this" and click continue. You can replay it any time with /kos notice.
+Full change history: Interface\AddOns\OlympusMytikas\CHANGELOG.txt
+
+
+===============================================================================
+PART 2 - MINEWATCH
+===============================================================================
+
+-------------------------------------------------------------------------------
+1. WHAT IT DOES
+-------------------------------------------------------------------------------
+
+MineWatch warns you when ANOTHER PLAYER comes close while you are out mining.
+It shows a pulsing banner with their class-coloured name, and can play a sound.
+It is read-only: it never casts, interacts with a node, or sends game input.
+
+It only arms when YOU cast a mining spell. Standing at a vein, looting, or
+other game objects does not arm it. Once armed, the window stays open about
+2 minutes; a mining skill-up or ore loot extends it. If nobody is near, it is
+silent.
+
+-------------------------------------------------------------------------------
+2. THE FIRST THINGS TO DO
+-------------------------------------------------------------------------------
+
+- Type /mw once. The options window opens.
+- /mw test shows a fake warning so you can see and hear it.
+- /mw list is the diagnostic. It shows the mining window, the last cast, every
+  visible nameplate and whether it would alert, the soft target, and a verdict.
+- Friendly players are invisible on this client unless friendly nameplates are
+  on. MineWatch turns them on automatically by default. If you turned them
+  off, /mw friends puts them back. /mw list will say if none are on screen.
+
+-------------------------------------------------------------------------------
+3. THE WARNING
+-------------------------------------------------------------------------------
+
+- A pulsing banner appears with the names of nearby players.
+- Sound is ON by default. /mw sound toggles it.
+- The alarm is a shipped sound file (siren by default). /mw alarm cycles
+  through siren, beeps, horn and client kit sounds, plays a preview, and saves
+  your pick. /mw alarm <number> chooses one directly.
+- Each new player makes it beep again. With the default linger 10, the banner
+  hides 10 seconds after the last change. /mw linger 0 keeps it up until
+  they leave.
+- /mw unlock (or /mw move) lets you drag the banner; then /mw lock fixes it
+  in place. It is locked by default so it cannot eat clicks.
+- /mw chat toggles the addon's own chat messages.
+
+-------------------------------------------------------------------------------
+4. RANGE AND WHO COUNTS
+-------------------------------------------------------------------------------
+
+- Default radius is 28 yards. /mw radius 10, 28 or 40, or /mw 10 etc.
+- By default ALL players count, friendly or enemy. /mw enemies switches to
+  enemies only. /mw enemies again puts it back.
+- /mw on and /mw off turn the whole addon on or off.
+- Default: mining-only alert. /mw gather turns that OFF so it alerts anywhere;
+  use /mw gather again to restore mining-only. The default is deliberately
+  mining-only so it does not go off while you are questing or in town.
+
+-------------------------------------------------------------------------------
+5. DIAGNOSTICS IF IT DOES NOT ALARM
+-------------------------------------------------------------------------------
+
+  /mw list    - every plate the addon can see, with tags like player, friendly,
+                npc, dropped:far, dropped:not-gathering, and the final verdict.
+  /mw cast    - the last cast id/name, what the client calls it, and whether it
+                would arm the window. Use this DURING a real mining cast.
+  /mw bags    - dumps bag/equipped item reads and the mining pick, if found.
+  /mw art     - texture check window. A blank square means that file did not load.
+  /mw skin    - switches between the drawn gold frame and the client's dialog
+                frame if the art does not look right.
+  /mw reset   - restore all defaults.
+
+-------------------------------------------------------------------------------
+6. QUICK COMMAND LIST - MINEWATCH
+-------------------------------------------------------------------------------
+
+  /mw                 open the options window
+  /mw on | off        enable or disable the addon
+  /mw test            show the warning banner and play the alarm
+  /mw sound           toggle the sound
+  /mw alarm [n]       cycle or choose the alarm, and preview it
+  /mw chat            toggle the addon's chat messages
+  /mw gather          toggle mining-only arming
+  /mw enemies         toggle enemies-only filtering
+  /mw friends         turn friendly nameplates back on
+  /mw linger [s]      banner linger; 0 = until they leave
+  /mw radius [yd]     10, 28 or 40 yards
+  /mw list            full diagnostic of plates, window and verdict
+  /mw cast            last cast and whether it arms the window
+  /mw bags            bag / equipped item reads for the mining pick
+  /mw lock            lock the banner position
+  /mw unlock          drag the banner, then lock it
+  /mw art             texture check
+  /mw skin            switch between drawn art and client dialog frame
+  /mw reset           restore defaults
+
+===============================================================================
+End of instructions.
+===============================================================================
